@@ -22,5 +22,7 @@ urlpatterns = [
     path('sesion/', include('Apps.sesion.urls')),
     path('persona/', include('Apps.persona.urls')),
     path('area/', include('Apps.area.urls')),
-    path('pais/', include('Apps.pais.urls')), 
+    path('centro/', include('Apps.centro.urls')),
+    path('pais/', include('Apps.pais.urls')),
+    path('sectorest/', include('Apps.sectorest.urls')), 
 ]
