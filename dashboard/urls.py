@@ -27,4 +27,7 @@ urlpatterns = [
     path('sectorest/', include('Apps.sectorest.urls')), 
     path('areadeconocimiento/', include('Apps.areadeconocimiento.urls')),
     path('doctor/', include('Apps.doctor.urls')),
+    path('tutor/', include('Apps.tutor.urls')),
+    path('programa/', include('Apps.programa.urls')),
+    # path('doctorando/', include('Apps.doctorando.urls')),
 ]
