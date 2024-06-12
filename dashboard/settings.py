@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'Apps.areadeconocimiento',
     'Apps.doctor',
     'Apps.tutor',
+    'Apps.programa',
+    'Apps.doctorando'
 ]
 
 MIDDLEWARE = [
