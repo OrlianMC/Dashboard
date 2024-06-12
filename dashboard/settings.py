@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'Apps.sectorest',
     'Apps.areadeconocimiento',
     'Apps.doctor',
+    'Apps.tutor',
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
