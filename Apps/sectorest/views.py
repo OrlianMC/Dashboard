@@ -25,11 +25,15 @@ class SectorestView(APIView):
         validacion = validar_datos(idsectorest, nombre)
         if validacion:
             return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+        existe = Sectorest.objects.filter(idsectorest=idsectorest).exists()
+        if not existe:
+            sectorest = Sectorest(idsectorest= idsectorest, nombre=nombre)
+            sectorest.save()
 
-        sectorest = Sectorest(idsectorest= idsectorest, nombre=nombre)
-        sectorest.save()
-
-        return Response({"message": "Sector estratégico creado correctamente"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Sector estratégico creado correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Sector estratégico existente"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def put(self, request):
         data_in = json.loads(request.body)

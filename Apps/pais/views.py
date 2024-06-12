@@ -27,10 +27,14 @@ class PaisView(APIView):
         if validacion:
             return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        pais = Pais(idpais= idpais, nombre=nombre, codigo=codigo)
-        pais.save()
+        existe = Pais.objects.filter(idpais=idpais).exists()
+        if not existe:
+            pais = Pais(idpais= idpais, nombre=nombre, codigo=codigo)
+            pais.save()
 
-        return Response({"message": "País creado correctamente"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "País creado correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "País existente"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def put(self, request):
         data_in = json.loads(request.body)

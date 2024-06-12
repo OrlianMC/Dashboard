@@ -26,11 +26,14 @@ class CentroView(APIView):
         validacion = validar_datos(idcentro, nombre, organismo)
         if validacion:
             return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-        centro = Centro(idcentro= idcentro, nombre=nombre, organismo=organismo)
-        centro.save()
-
-        return Response({"message": "Centro creado correctamente"}, status=status.HTTP_201_CREATED)
+        
+        existe = Centro.objects.filter(idcentro=idcentro).exists()
+        if not existe:
+            centro = Centro(idcentro= idcentro, nombre=nombre, organismo=organismo)
+            centro.save()
+            return Response({"message": "Centro creado correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Centro existente"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def put(self, request):
         data_in = json.loads(request.body)

@@ -25,12 +25,15 @@ class AreaView(APIView):
         validacion = validar_datos(idarea, nombre)
         if validacion:
             return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-        area = Area(idarea= idarea, nombre=nombre)
-        area.save()
-
-        return Response({"message": "Área creada correctamente"}, status=status.HTTP_201_CREATED)
-
+        
+        existe = Area.objects.filter(idarea=idarea).exists()
+        if not existe:
+            area = Area(idarea= idarea, nombre=nombre)
+            area.save()
+            return Response({"message": "Área creada correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Área existente"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            
     def put(self, request):
         data_in = json.loads(request.body)
         idarea = data_in.get('idarea')
@@ -76,7 +79,7 @@ def validar_datos(idarea, nombre):
     if len(nombre) > 45:
         errores.append("Campo excede límite de 45 caracteres")
 
-    if re.search(r'\d', nombre):
-        errores.append("Cadena contiene números")
+    # if re.search(r'\d', nombre):
+    #     errores.append("Cadena contiene números")
             
     return errores

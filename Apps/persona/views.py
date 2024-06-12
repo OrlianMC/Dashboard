@@ -24,15 +24,37 @@ class PersonaView(APIView):
         nombre = data_in.get('nombre')
         apellido = data_in.get('apellido')
         sexo = data_in.get('sexo')
+        plantillaarea_idarea = data_in.get('plantillaarea_idarea')
+        pais_idpais = data_in.get('pais_idpais')
+        centro_idcentro = data_in.get('centro_idcentro')
+        sectorest_idsectorest = data_in.get('sectorest_idsectorest')
         
-        validacion = validar_datos(idpersona, ci, nombre, apellido, sexo)
+        validacion = validar_datos(idpersona, ci, nombre, apellido, sexo, plantillaarea_idarea, pais_idpais, centro_idcentro, sectorest_idsectorest)
         if validacion:
             return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+        plantillaarea_idarea_object = get_object_or_404(Area, idarea=plantillaarea_idarea)
+        pais_idpais_object = get_object_or_404(Pais, idpais = pais_idpais)
+        centro_idcentro_object = get_object_or_404(Centro, idcentro = centro_idcentro)
+        sectorest_idsectorest_object = get_object_or_404(Sectorest, idsectorest = sectorest_idsectorest)
+        
+        existe = Persona.objects.filter(idpersona=idpersona).exists()
+        if not existe:
+            persona = Persona(
+                idpersona= idpersona, 
+                ci=ci, nombre=nombre, 
+                apellido=apellido, 
+                sexo=sexo,
+                plantillaarea_idarea = plantillaarea_idarea_object,
+                pais_idpais = pais_idpais_object,
+                centro_idcentro = centro_idcentro_object,
+                sectorest_idsectorest = sectorest_idsectorest_object
+                )
+            persona.save()
 
-        persona = Persona(idpersona= idpersona, ci=ci, nombre=nombre, apellido=apellido, sexo=sexo)
-        persona.save()
-
-        return Response({"message": "Persona creada correctamente"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Persona creada correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Persona existente"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def put(self, request):
         data_in = json.loads(request.body)
@@ -48,15 +70,28 @@ class PersonaView(APIView):
             nombre = data_in.get('nombre')
             apellido = data_in.get('apellido')
             sexo = data_in.get('sexo')
+            plantillaarea_idarea = data_in.get('plantillaarea_idarea')
+            pais_idpais = data_in.get('pais_idpais')
+            centro_idcentro = data_in.get('centro_idcentro')
+            sectorest_idsectorest = data_in.get('sectorest_idsectorest')
             
-            validacion = validar_datos(idpersona, ci, nombre, apellido, sexo)
+            validacion = validar_datos(idpersona, ci, nombre, apellido, sexo, plantillaarea_idarea, pais_idpais, centro_idcentro, sectorest_idsectorest)
             if validacion:
                 return Response({"error": "Datos incorrectos"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            
+            plantillaarea_idarea_object = get_object_or_404(Area, idarea=plantillaarea_idarea)
+            pais_idpais_object = get_object_or_404(Pais, idpais = pais_idpais)
+            centro_idcentro_object = get_object_or_404(Centro, idcentro = centro_idcentro)
+            sectorest_idsectorest_object = get_object_or_404(Sectorest, idsectorest = sectorest_idsectorest)
 
             persona.ci = ci
             persona.nombre = nombre
             persona.apellido = apellido
             persona.sexo = sexo
+            persona.plantillaarea_idarea = plantillaarea_idarea_object
+            persona.pais_idpais = pais_idpais_object
+            persona.centro_idcentro = centro_idcentro_object
+            persona.sectorest_idsectorest = sectorest_idsectorest_object
             persona.save()
         
             return Response({"message": "Persona modificada correctamente"}, status=status.HTTP_200_OK)
@@ -78,11 +113,11 @@ class PersonaView(APIView):
         
         
         
-def validar_datos(idpersona, ci, nombre, apellido, sexo):
+def validar_datos(idpersona, ci, nombre, apellido, sexo, plantillaarea_idarea, pais_idpais, centro_idcentro, sectorest_idsectorest):
     errores = []
     campos = [nombre, apellido, sexo]
         
-    if not all([idpersona, ci, nombre, apellido, sexo]):
+    if not all([idpersona, ci, nombre, apellido, sexo, plantillaarea_idarea, pais_idpais, centro_idcentro, sectorest_idsectorest]):
         errores.append("Faltan campos requeridos")
         
     for item in campos:

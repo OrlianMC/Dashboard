@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'Apps.area',
     'Apps.centro',
     'Apps.pais',
-    'Apps.sectorest'
+    'Apps.sectorest',
+    'Apps.areadeconocimiento',
+    'Apps.doctor',
 ]
 
 MIDDLEWARE = [

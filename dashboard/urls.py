@@ -25,4 +25,5 @@ urlpatterns = [
     path('centro/', include('Apps.centro.urls')),
     path('pais/', include('Apps.pais.urls')),
     path('sectorest/', include('Apps.sectorest.urls')), 
+    path('areadeconocimiento/', include('Apps.areadeconocimiento.urls')),
 ]
