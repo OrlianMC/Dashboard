@@ -9,4 +9,4 @@ class Doctor(models.Model):
     facultadarea_idarea = models.ForeignKey(Area, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.iddoctor)
+        return str(self.persona_idpersona.nombre + " " + self.persona_idpersona.apellido)

@@ -9,4 +9,4 @@ class Tutor(models.Model):
     doctorando_iddoctorando = models.ForeignKey(Doctorando, on_delete=models.CASCADE)
     
     def __str__(self):
-        return str(self.idtutor)
+        return str(self.doctor_iddoctor.persona_idpersona.nombre + " tutor de: " + self.doctorando_iddoctorando.persona_idpersona.nombre) 

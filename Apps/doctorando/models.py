@@ -19,4 +19,4 @@ class Doctorando(models.Model):
     sectorest_idsectorest = models.ForeignKey(Sectorest, on_delete=models.CASCADE)
     
     def __str__(self):
-        return str(self.iddoctorando)
+        return str(self.persona_idpersona.nombre + " " + self.persona_idpersona.apellido)
