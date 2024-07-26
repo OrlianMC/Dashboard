@@ -1,11 +1,16 @@
 from rest_framework import serializers
 from .models import Persona
+from Apps.centro.serializers import *
+from Apps.area.serializers import *
+from Apps.sectorest.serializers import *
+from Apps.pais.serializers import *
       
 class Persona_Serializer(serializers.ModelSerializer):
-    plantillaarea_idarea = serializers.CharField()
-    pais_idpais = serializers.CharField()
-    centro_idcentro = serializers.CharField()
-    sectorest_idsectorest = serializers.CharField()
+      
+    centro_idcentro = serializers.PrimaryKeyRelatedField(queryset=Centro.objects.all())
+    plantillaarea_idarea = serializers.PrimaryKeyRelatedField(queryset=Area.objects.all())
+    pais_idpais = serializers.PrimaryKeyRelatedField(queryset=Pais.objects.all())
+    sectorest_idsectorest = serializers.PrimaryKeyRelatedField(queryset=Sectorest.objects.all())
     
     class Meta:
         model = Persona

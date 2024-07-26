@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from .models import Doctorando
+from Apps.persona.models import *
+from Apps.programa.models import *
       
 class Doctorando_Serializer(serializers.ModelSerializer):
-    persona_idpersona = serializers.CharField()
-    facultadarea_idarea = serializers.CharField()
-    programa_idprograma = serializers.CharField()
-    sectorest_idsectorest = serializers.CharField()
+    persona_idpersona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
+    facultadarea_idarea = serializers.PrimaryKeyRelatedField(queryset=Area.objects.all())
+    programa_idprograma = serializers.PrimaryKeyRelatedField(queryset=Programa.objects.all())
+    sectorest_idsectorest = serializers.PrimaryKeyRelatedField(queryset=Sectorest.objects.all())
     
     class Meta:
         model = Doctorando

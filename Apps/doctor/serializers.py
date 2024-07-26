@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import *
       
 class Doctor_Serializer(serializers.ModelSerializer):
-    persona_idpersona = serializers.CharField()
-    facultadarea_idarea = serializers.CharField()
+    persona_idpersona = serializers.PrimaryKeyRelatedField(queryset=Persona.objects.all())
+    facultadarea_idarea = serializers.PrimaryKeyRelatedField(queryset=Area.objects.all())
     
     class Meta:
         model = Doctor
