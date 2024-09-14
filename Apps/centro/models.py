@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Centro(models.Model):
-    idcentro = models.IntegerField(primary_key=True)
+    idcentro = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=45)
     organismo = models.CharField(max_length=45)
     

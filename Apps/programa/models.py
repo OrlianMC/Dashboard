@@ -4,7 +4,7 @@ from Apps.areadeconocimiento.models import *
 
 # Create your models here.
 class Programa(models.Model):
-    idprograma = models.IntegerField(primary_key=True)
+    idprograma = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=250)
     sectorest = models.BooleanField()
     desarrollolocal = models.BooleanField()

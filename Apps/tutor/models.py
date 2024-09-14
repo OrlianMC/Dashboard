@@ -4,7 +4,7 @@ from Apps.doctorando.models import *
 
 # Create your models here.
 class Tutor(models.Model):
-    idtutor = models.IntegerField(primary_key=True)
+    idtutor = models.AutoField(primary_key=True)
     doctor_iddoctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     doctorando_iddoctorando = models.ForeignKey(Doctorando, on_delete=models.CASCADE)
     

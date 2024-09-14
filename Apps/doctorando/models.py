@@ -6,7 +6,7 @@ from Apps.programa.models import *
 
 # Create your models here.
 class Doctorando(models.Model):
-    iddoctorando = models.IntegerField(primary_key=True)
+    iddoctorando = models.AutoField(primary_key=True)
     fdefensa = models.IntegerField(null=True, blank=True)
     fingreso = models.IntegerField(null=True, blank=True)
     temadetesis = models.CharField(max_length=100)
