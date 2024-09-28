@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'Apps.doctor',
     'Apps.tutor',
     'Apps.programa',
-    'Apps.doctorando'
+    'Apps.doctorando',
+    'Apps.usuario' # new
 ]
 
 MIDDLEWARE = [
@@ -100,7 +101,7 @@ WSGI_APPLICATION = 'dashboard.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dashboard',
+        'NAME': 'dashboard_db',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -206,3 +207,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+# settings.py
+
+AUTH_USER_MODEL = 'usuario.Usuario'
