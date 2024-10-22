@@ -31,4 +31,6 @@ urlpatterns = [
     path('tutor/', include('Apps.tutor.urls')),
     path('programa/', include('Apps.programa.urls')),
     path('doctorando/', include('Apps.doctorando.urls')),
+    path('graduado/', include('Apps.graduado.urls')),
+    path('estadistica/', include('Apps.estadistica.urls')),
 ]

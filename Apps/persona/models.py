@@ -5,7 +5,6 @@ from Apps.pais.models import *
 from Apps.sectorest.models import *
 
 class Persona(models.Model):
-    # idpersona = models.IntegerField(auto_created=True, primary_key=True)
     idpersona = models.AutoField(primary_key=True)
     ci = models.CharField(max_length=11, unique=True)
     nombre = models.CharField(max_length=45)

@@ -53,7 +53,9 @@ INSTALLED_APPS = [
     'Apps.tutor',
     'Apps.programa',
     'Apps.doctorando',
-    'Apps.usuario' # new
+    'Apps.graduado',
+    'Apps.usuario', # new
+    'Apps.estadistica',
 ]
 
 MIDDLEWARE = [
