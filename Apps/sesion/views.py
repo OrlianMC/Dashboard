@@ -4,64 +4,33 @@ import json
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import serializers
-
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        token['username'] = user.username
-        token['role'] = user.role
-
-        return token
-
-# class MyTokenObtainPairView(TokenObtainPairView):
-#     def post(self, request):
-#         data = json.loads(request.body)
-#         username = data.get('username')
-#         password = data.get('password')
-
-#         user = authenticate(request, username=username, password=password)
-        
-#         if user is not None:
-#             login(request, user)
-            
-#             serializer = MyTokenObtainPairSerializer(data=data)
-#             if serializer.is_valid():
-#                 token = serializer.validated_data
-#                 return JsonResponse({'token': token}, status=200)
-#             else:
-#                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
-#         else:
-#             return JsonResponse({'message': 'Login fail'}, status=401)
 class MyTokenObtainPairView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
 
         user = authenticate(request, username=username, password=password)
-        
         if user is not None:
-            login(request, user)  # Inicia sesión en la sesión de Django
-            
-            serializer = MyTokenObtainPairSerializer(data=data)
-            serializer.is_valid(raise_exception=True)  # Lanza un error si es inválido
-            token = serializer.validated_data
-            
-            return Response({'token': token}, status=status.HTTP_200_OK)
+            login(request, user)
+
+            refresh = RefreshToken.for_user(user)
+            token = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'username': user.username,
+                'role': user.role
+            }
+            return JsonResponse({'token': token}, status=200)
         else:
-            return Response({'message': 'Login failed'}, status=status.HTTP_204_NO_CONTENT)
-    
+            return JsonResponse({'message': 'Login failed'}, status=401)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def logout(request):
+def signout(request):
     if request.method == 'POST':
         logout(request)
         return JsonResponse({'message': 'Logout successful'}, status=200)
