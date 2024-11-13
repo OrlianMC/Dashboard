@@ -9,7 +9,9 @@ from Apps.persona.models import *
 from Apps.programa.models import *
 from Apps.areadeconocimiento.models import *
 from datetime import date
-from django.db.models import Count
+from django.db.models import Count, Value
+from django.db.models.functions import Coalesce
+
 
 class EstadisticaView(APIView):
     def get(self, request):
@@ -21,6 +23,7 @@ class EstadisticaView(APIView):
             'graduadoage': self.get_graduado_age(),
             'doctoral_students_by_knowledge_area' : self.get_doctoral_students_by_knowledge_area(),
             'doctoral_students_by_program_and_area' : self.get_doctoral_students_by_program_and_area(),
+            'doctoral_students_and_graduates_by_year': self.get_doctoral_students_and_graduates_by_year(),
         })
 
     def get_doctor_age(self):
@@ -125,3 +128,44 @@ class EstadisticaView(APIView):
         response_data = list(serializer.data)
             
         return response_data
+
+    def get_doctoral_students_and_graduates_by_year(self):
+        # Contar los doctorandos por año
+        doctorando_counts = (
+            Doctorando.objects
+            .values('fdefensa')
+            .annotate(total_doctorandos=Count('iddoctorando'))
+        )
+
+        # Contar los graduados por año
+        graduado_counts = (
+            Graduado.objects
+            .values('fechadefensa__year')
+            .annotate(total_graduados=Count('idgraduado'))
+        )
+
+        # Unir los resultados
+        results = {}
+        
+        for doc in doctorando_counts:
+            year = doc['fdefensa']
+            results[year] = {
+                'total_doctorandos': doc['total_doctorandos'],
+                'total_graduados': 0
+            }
+
+        for grad in graduado_counts:
+            year = grad['fechadefensa__year']
+            if year not in results:
+                results[year] = {
+                    'total_doctorandos': 0,
+                    'total_graduados': grad['total_graduados']
+                }
+            else:
+                results[year]['total_graduados'] = grad['total_graduados']
+
+        # Convertir a lista de dicts y ordenar por año
+        final_results = [{'año': year, **data} for year, data in results.items()]
+        final_results.sort(key=lambda x: x['año'])
+
+        return final_results
