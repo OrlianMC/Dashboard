@@ -9,8 +9,8 @@ from Apps.persona.models import *
 from Apps.programa.models import *
 from Apps.areadeconocimiento.models import *
 from datetime import date
-from django.db.models import Count, Value
-from django.db.models.functions import Coalesce
+from django.db.models import Count, Value, Case, When, F, IntegerField
+from django.db.models.functions import Coalesce, ExtractYear, Now, Substr
 
 
 class EstadisticaView(APIView):
@@ -24,6 +24,7 @@ class EstadisticaView(APIView):
             'doctoral_students_by_knowledge_area' : self.get_doctoral_students_by_knowledge_area(),
             'doctoral_students_by_program_and_area' : self.get_doctoral_students_by_program_and_area(),
             'doctoral_students_and_graduates_by_year': self.get_doctoral_students_and_graduates_by_year(),
+            'doctoral_students_and_doctors_by_age_groups': self.get_doctoral_students_and_doctors_by_age_groups()
         })
 
     def get_doctor_age(self):
@@ -130,21 +131,18 @@ class EstadisticaView(APIView):
         return response_data
 
     def get_doctoral_students_and_graduates_by_year(self):
-        # Contar los doctorandos por año
         doctorando_counts = (
             Doctorando.objects
             .values('fdefensa')
             .annotate(total_doctorandos=Count('iddoctorando'))
         )
 
-        # Contar los graduados por año
         graduado_counts = (
             Graduado.objects
             .values('fechadefensa__year')
             .annotate(total_graduados=Count('idgraduado'))
         )
 
-        # Unir los resultados
         results = {}
         
         for doc in doctorando_counts:
@@ -169,3 +167,112 @@ class EstadisticaView(APIView):
         final_results.sort(key=lambda x: x['año'])
 
         return final_results
+    
+    def get_doctoral_students_and_doctors_by_age_groups(self):
+        doctoral_students = Doctorando.objects.select_related('persona_idpersona').all()
+        doctors = Doctor.objects.select_related('persona_idpersona').all()
+
+        age_groups = {
+            '<30': {'doctorandos': 0, 'doctores': 0},
+            '31-35': {'doctorandos': 0, 'doctores': 0},
+            '36-40': {'doctorandos': 0, 'doctores': 0},
+            '41-45': {'doctorandos': 0, 'doctores': 0},
+            '46-50': {'doctorandos': 0, 'doctores': 0},
+            '51-55': {'doctorandos': 0, 'doctores': 0},
+            '56-60': {'doctorandos': 0, 'doctores': 0},
+            '61 o más': {'doctorandos': 0, 'doctores': 0},
+        }
+
+        for student in doctoral_students:
+            try:
+                age = self.calculate_age(student.persona_idpersona.ci)
+                if age < 30:
+                    age_groups['<30']['doctorandos'] += 1
+                elif 31 <= age <= 35:
+                    age_groups['31-35']['doctorandos'] += 1
+                elif 36 <= age <= 40:
+                    age_groups['36-40']['doctorandos'] += 1
+                elif 41 <= age <= 45:
+                    age_groups['41-45']['doctorandos'] += 1
+                elif 46 <= age <= 50:
+                    age_groups['46-50']['doctorandos'] += 1
+                elif 51 <= age <= 55:
+                    age_groups['51-55']['doctorandos'] += 1
+                elif 56 <= age <= 60:
+                    age_groups['56-60']['doctorandos'] += 1
+                else:
+                    age_groups['61 o más']['doctorandos'] += 1
+            except ValueError:
+                continue
+
+        for doctor in doctors:
+            try:
+                age = self.calculate_age(doctor.persona_idpersona.ci)
+                if age < 30:
+                    age_groups['<30']['doctores'] += 1
+                elif 31 <= age <= 35:
+                    age_groups['31-35']['doctores'] += 1
+                elif 36 <= age <= 40:
+                    age_groups['36-40']['doctores'] += 1
+                elif 41 <= age <= 45:
+                    age_groups['41-45']['doctores'] += 1
+                elif 46 <= age <= 50:
+                    age_groups['46-50']['doctores'] += 1
+                elif 51 <= age <= 55:
+                    age_groups['51-55']['doctores'] += 1
+                elif 56 <= age <= 60:
+                    age_groups['56-60']['doctores'] += 1
+                else:
+                    age_groups['61 o más']['doctores'] += 1
+            except ValueError:
+                continue
+
+        results = []
+        for rango, counts in age_groups.items():
+            results.append({
+                'rango_edad': rango,
+                'cantidad_doctorandos': counts['doctorandos'],
+                'cantidad_doctores': counts['doctores'],
+            })
+
+        return results
+    
+    # def get_doctoral_students_by_age_groups(self):
+    #     doctoral_students = Doctorando.objects.select_related('persona_idpersona').all()
+        
+    #     age_groups = {
+    #         '<30': 0,
+    #         '31-35': 0,
+    #         '36-40': 0,
+    #         '41-45': 0,
+    #         '46-50': 0,
+    #         '51-55': 0,
+    #         '56-60': 0,
+    #         '61 o más': 0,
+    #     }
+
+    #     for student in doctoral_students:
+    #         try:
+    #             age = self.calculate_age(student.persona_idpersona.ci)
+    #             if age < 30:
+    #                 age_groups['<30'] += 1
+    #             elif 31 <= age <= 35:
+    #                 age_groups['31-35'] += 1
+    #             elif 36 <= age <= 40:
+    #                 age_groups['36-40'] += 1
+    #             elif 41 <= age <= 45:
+    #                 age_groups['41-45'] += 1
+    #             elif 46 <= age <= 50:
+    #                 age_groups['46-50'] += 1
+    #             elif 51 <= age <= 55:
+    #                 age_groups['51-55'] += 1
+    #             elif 56 <= age <= 60:
+    #                 age_groups['56-60'] += 1
+    #             else:
+    #                 age_groups['61 o más'] += 1
+    #         except ValueError:
+    #             continue
+
+    #     results = [{'rango_edad': rango, 'cantidad_doctorandos': count} for rango, count in age_groups.items()]
+        
+    #     return results
