@@ -1,5 +1,5 @@
 from django.db import models
-from Apps.area.models import *
+from Apps.centro.models import *
 from Apps.areadeconocimiento.models import *
 
 # Create your models here.
@@ -10,7 +10,7 @@ class Programa(models.Model):
     desarrollolocal = models.BooleanField()
     adistancia = models.BooleanField()
     estdesarrollomun = models.BooleanField()
-    area_idarea = models.ForeignKey(Area, on_delete=models.CASCADE)
+    centro_idcentro = models.ForeignKey(Centro, on_delete=models.CASCADE)
     areadeconocimiento_idareadeconocimiento = models.ForeignKey(Areadeconocimiento, on_delete=models.CASCADE)
     
     def __str__(self):

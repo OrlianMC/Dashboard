@@ -22,7 +22,9 @@ class EstadisticaView(APIView):
             'tutorage': self.get_tutor_age(),
             'graduadoage': self.get_graduado_age(),
             'doctoral_students_by_knowledge_area' : self.get_doctoral_students_by_knowledge_area(),
+            'doctor_by_knowledge_area': self.get_doctor_by_knowledge_area(),
             'doctoral_students_by_program_and_area' : self.get_doctoral_students_by_program_and_area(),
+            'doctor_by_area_and_knowledge_area': self.get_doctor_by_area_and_knowledge_area(),
             'doctoral_students_and_graduates_by_year': self.get_doctoral_students_and_graduates_by_year(),
             'doctoral_students_and_doctors_by_age_groups': self.get_doctoral_students_and_doctors_by_age_groups()
         })
@@ -116,16 +118,39 @@ class EstadisticaView(APIView):
         response_data = list(serializer.data)
 
         return response_data
+    
+    def get_doctor_by_knowledge_area(self):
+        results = (
+            Areadeconocimiento.objects
+            .annotate(doctor_count=Count('doctors'))
+            .values('nombre', 'doctor_count')
+        )
+        serializer = Doctor_by_knowledge_areaSerializer(results, many=True)
+        response_data = list(serializer.data)
+
+        return response_data
         
     def get_doctoral_students_by_program_and_area(self):
         
         results = (
         Doctorando.objects
-        .values('facultadarea_idarea__nombre', 'programa_idprograma__nombre')
+        .values('facultadarea_idarea__codigo', 'programa_idprograma__nombre')
         .annotate(doctorando_count=Count('iddoctorando'))
         )
 
         serializer = Doctoral_students_by_program_and_areaSerializer(results, many=True)
+        response_data = list(serializer.data)
+            
+        return response_data
+
+    def get_doctor_by_area_and_knowledge_area(self):
+        results = (
+            Doctor.objects
+            .values('facultadarea_idarea__codigo', 'areadeconocimiento_idareadeconocimiento__nombre')
+            .annotate(doctor_count=Count('iddoctor'))
+            # .order_by('facultadarea_idarea__nombre', 'areadeconocimiento_idareadeconocimiento__nombre')
+        )
+        serializer = Doctor_by_area_and_knowledge_areaSerializer(results, many=True)
         response_data = list(serializer.data)
             
         return response_data
